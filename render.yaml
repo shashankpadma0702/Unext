@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: unext-fullstack
+    env: node
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: VITE_API_URL
+        value: "" # Optional: Will use relative path automatically when hosted on same domain

@@ -1,13 +1,13 @@
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
+const path = require("path");
 
 const app = express();
 app.use(cors()); // Allows all origins by default (good for simple deployment)
 
 // Internal cache to prevent spamming the OK Surf API
 // <... omitted cache logic for brevity as it remains unchanged ...>
-
 
 // Internal cache to prevent spamming the OK Surf API
 let newsCache = null;
@@ -82,6 +82,15 @@ app.get("/api/news/current", async (req, res) => {
 app.get("/api/news/sports", async (req, res) => {
   const data = await fetchLiveNews();
   res.json(formatArticles(data?.Sports));
+});
+
+// --- PRODUCTION FULL STACK DEPLOYMENT ---
+// Serve the built frontend static files
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+// Catch-all route to serve index.html for React Router
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
 });
 
 // Start server
