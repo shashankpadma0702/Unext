@@ -4,16 +4,27 @@ import NewsCard from "../components/NewsCard";
 
 const Dashboard = ({ category }) => {
   const [news, setNews] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const loadNews = async () => {
+    setLoading(true);
     const data = await fetchNews(category);
 
     setNews(data);
+    setLoading(false);
   };
 
   useEffect(() => {
     loadNews();
   }, [category]);
+
+  if (loading) {
+    return (
+      <div className="loader-container">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
 
   const hero = news[0];
   const others = news.slice(1);
