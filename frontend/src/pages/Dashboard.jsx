@@ -49,7 +49,7 @@ const Dashboard = ({ category }) => {
 
       <div className="grid">
         {others.map((article, index) => (
-          <NewsCard key={index} article={article} />
+          <NewsCard key={index} article={article} index={index} />
         ))}
       </div>
     </div>
