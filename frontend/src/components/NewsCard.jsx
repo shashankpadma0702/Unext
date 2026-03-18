@@ -1,10 +1,10 @@
 export const fallbackImages = [
-  "https://picsum.photos/seed/news1/600/400",
-  "https://picsum.photos/seed/news2/600/400",
-  "https://picsum.photos/seed/news3/600/400",
-  "https://picsum.photos/seed/news4/600/400",
-  "https://picsum.photos/seed/news5/600/400",
-  "https://picsum.photos/seed/news6/600/400"
+  "/finance-images/finance1.jpg",
+  "/finance-images/finance2.jpg",
+  "/finance-images/finance3.jpg",
+  "/finance-images/finance4.jpg",
+  "/finance-images/finance5.jpg",
+  "/finance-images/finance6.jpg"
 ]
 
 const NewsCard = ({ article, index }) => {
