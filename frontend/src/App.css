@@ -14,10 +14,10 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 18px 50px;
-  background: #005B75; /* Ocean Blue */
-  border-bottom: 4px solid #B02A30; /* Autumn Crimson */
+  background: linear-gradient(135deg, #B02A30, #8A1F25); /* Vibrant Autumn Crimson Gradient */
+  border-bottom: 4px solid #F99D27; /* Sea Buckthorn accent */
   color: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 20px rgba(176, 42, 48, 0.25);
 }
 
 .logo {
@@ -37,8 +37,8 @@ body {
 
 .menu button {
   background: transparent;
-  color: rgba(255, 255, 255, 0.85);
-  border: none;
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid transparent;
   padding: 9px 16px;
   border-radius: 6px;
   font-weight: 500;
@@ -48,16 +48,16 @@ body {
 }
 
 .menu button:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   color: white;
   transform: translateY(-1px);
 }
 
 .menu button.active {
   background: #F99D27; /* Sea Buckthorn */
-  color: #005B75; /* Ocean Blue */
+  color: #8A1F25; /* Dark Crimson text */
   font-weight: 700;
-  box-shadow: 0 4px 12px rgba(249, 157, 39, 0.3);
+  box-shadow: 0 4px 12px rgba(249, 157, 39, 0.4);
 }
 
 /* DASHBOARD */
