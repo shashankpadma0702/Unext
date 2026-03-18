@@ -1,4 +1,14 @@
-const Navbar = ({ setCategory }) => {
+const Navbar = ({ setCategory, category }) => {
+  const navItems = [
+    { id: "icici", label: "ICICI Daily" },
+    { id: "bfsi", label: "BFSI" },
+    { id: "markets", label: "Markets" },
+    { id: "commodities", label: "Commodities" },
+    { id: "world", label: "World" },
+    { id: "current", label: "Current Affairs" },
+    { id: "sports", label: "Sports" }
+  ];
+
   return (
     <div className="navbar">
       <div className="logo">
@@ -6,19 +16,15 @@ const Navbar = ({ setCategory }) => {
       </div>
 
       <div className="menu">
-        <button onClick={() => setCategory("icici")}>ICICI Daily</button>
-
-        <button onClick={() => setCategory("bfsi")}>BFSI</button>
-
-        <button onClick={() => setCategory("markets")}>Markets</button>
-
-        <button onClick={() => setCategory("commodities")}>Commodities</button>
-
-        <button onClick={() => setCategory("world")}>World</button>
-
-        <button onClick={() => setCategory("current")}>Current Affairs</button>
-
-        <button onClick={() => setCategory("sports")}>Sports</button>
+        {navItems.map((item) => (
+          <button
+            key={item.id}
+            className={category === item.id ? "active" : ""}
+            onClick={() => setCategory(item.id)}
+          >
+            {item.label}
+          </button>
+        ))}
       </div>
     </div>
   );

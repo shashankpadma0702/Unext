@@ -14,36 +14,50 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 18px 50px;
-  background: linear-gradient(90deg, #ae275f, #c63c75);
+  background: #005B75; /* Ocean Blue */
+  border-bottom: 4px solid #B02A30; /* Autumn Crimson */
   color: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
 }
 
 .logo {
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.logo span {
+  color: #F99D27; /* Sea Buckthorn */
 }
 
 .menu {
   display: flex;
-  gap: 14px;
+  gap: 8px;
 }
 
 .menu button {
-  background: rgba(255, 255, 255, 0.95);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
   border: none;
-  padding: 9px 18px;
-  border-radius: 25px;
-  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14.5px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .menu button:hover {
-  background: white;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.menu button.active {
+  background: #F99D27; /* Sea Buckthorn */
+  color: #005B75; /* Ocean Blue */
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(249, 157, 39, 0.3);
 }
 
 /* DASHBOARD */
@@ -90,7 +104,7 @@ body {
 }
 
 .hero-text a {
-  color: #ae275f;
+  color: #B02A30; /* Autumn Crimson */
   font-weight: 600;
   text-decoration: none;
   font-size: 15px;
@@ -171,7 +185,7 @@ body {
 }
 
 .card-footer a {
-  color: #ae275f;
+  color: #B02A30; /* Autumn Crimson */
   font-weight: 600;
   text-decoration: none;
 }
@@ -218,8 +232,8 @@ body {
 .spinner {
   width: 50px;
   height: 50px;
-  border: 5px solid rgba(174, 39, 95, 0.2);
-  border-top: 5px solid #ae275f;
+  border: 5px solid rgba(176, 42, 48, 0.15); /* Autumn Crimson light */
+  border-top: 5px solid #B02A30; /* Autumn Crimson */
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }

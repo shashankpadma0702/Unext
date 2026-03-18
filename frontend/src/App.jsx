@@ -8,7 +8,7 @@ function App() {
 
   return (
     <div>
-      <Navbar setCategory={setCategory} />
+      <Navbar setCategory={setCategory} category={category} />
 
       <Dashboard category={category} />
     </div>
