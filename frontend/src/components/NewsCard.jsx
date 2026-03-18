@@ -1,10 +1,10 @@
 export const fallbackImages = [
-  "https://images.unsplash.com/photo-1507679799987-c73779587ccf",
-  "https://images.unsplash.com/photo-1559526324-593bc073d938",
-  "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3",
-  "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40",
-  "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
-  "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e"
+  "https://picsum.photos/seed/news1/600/400",
+  "https://picsum.photos/seed/news2/600/400",
+  "https://picsum.photos/seed/news3/600/400",
+  "https://picsum.photos/seed/news4/600/400",
+  "https://picsum.photos/seed/news5/600/400",
+  "https://picsum.photos/seed/news6/600/400"
 ]
 
 const NewsCard = ({ article, index }) => {
