@@ -91,22 +91,54 @@ app.get("/api/news/sports", async (req, res) => {
   res.json(formatArticles(data?.Sports));
 });
 
-// ICICI NEWS (Custom via Bing RSS)
+let iciciNewsCache = null;
+let lastIciciFetchTime = 0;
+
+// ICICI NEWS (Custom via Bing RSS + Cheerio Image Scraper)
 app.get("/api/news/icici", async (req, res) => {
+  const now = Date.now();
+  if (iciciNewsCache && now - lastIciciFetchTime < CACHE_TTL_MS) {
+    return res.json(iciciNewsCache);
+  }
+
   try {
     const feed = await parser.parseURL("https://www.bing.com/news/search?q=ICICI+Bank&format=rss");
-    const articles = feed.items.slice(0, 10).map(item => ({
-      title: item.title,
-      url: item.link,
-      // Bing RSS usually doesn't have an easily extractable image in simple parsing
-      urlToImage: item.image || "",
-      source: { name: "Bing News (ICICI)" },
-      description: item.contentSnippet || item.title
+    const items = feed.items.slice(0, 10);
+    const cheerio = require("cheerio");
+
+    const articles = await Promise.all(items.map(async (item) => {
+      let imageUrl = "";
+      try {
+        const match = item.link.match(/&url=([^&]+)/);
+        if (match && match[1]) {
+          const realUrl = decodeURIComponent(match[1]);
+          const htmlRes = await axios.get(realUrl, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0.0.0' },
+            timeout: 3500
+          });
+          const $ = cheerio.load(htmlRes.data);
+          const og = $('meta[property="og:image"]').attr('content');
+          if (og && og.startsWith('http')) imageUrl = og;
+        }
+      } catch (err) {
+        // Silently fail allowing the frontend fallback images to kick in
+      }
+
+      return {
+        title: item.title,
+        url: item.link,
+        urlToImage: imageUrl,
+        source: { name: "Bing News (ICICI)" },
+        description: item.contentSnippet || item.title
+      };
     }));
+
+    iciciNewsCache = articles;
+    lastIciciFetchTime = now;
     res.json(articles);
   } catch (error) {
     console.error("Error fetching ICICI news:", error.message);
-    res.json([]);
+    res.json(iciciNewsCache || []);
   }
 });
 
