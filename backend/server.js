@@ -160,4 +160,13 @@ app.get("*", (req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`ICICI UNext News backend running on port ${PORT} (Live OK.surf API)`);
+  
+  // SELF-PING MECHANISM: Prevent Render from sleeping
+  // Render free tier sleeps after 15 mins of inactivity. We ping ourselves every 14 mins.
+  const RENDER_URL = "https://unext-1.onrender.com";
+  setInterval(() => {
+    axios.get(`${RENDER_URL}/api/health`)
+      .then(() => console.log("Self-ping successful. Keeping server awake 🚀"))
+      .catch(err => console.error("Self-ping failed:", err.message));
+  }, 14 * 60 * 1000); // 14 minutes
 });
