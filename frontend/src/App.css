@@ -14,7 +14,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 18px 50px;
-  background: linear-gradient(135deg, #B02A30, #8A1F25); /* Vibrant Autumn Crimson Gradient */
+  background: linear-gradient(135deg, #D4333B, #B02A30); /* Vibrant, lighter Autumn Crimson Gradient */
   border-bottom: 4px solid #F99D27; /* Sea Buckthorn accent */
   color: white;
   box-shadow: 0 4px 20px rgba(176, 42, 48, 0.25);
