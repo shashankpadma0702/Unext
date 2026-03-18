@@ -84,6 +84,11 @@ app.get("/api/news/sports", async (req, res) => {
   res.json(formatArticles(data?.Sports));
 });
 
+// HEALTH CHECK (To keep Render awake)
+app.get("/api/health", (req, res) => {
+  res.status(200).send("OK. Server is awake.");
+});
+
 // --- PRODUCTION FULL STACK DEPLOYMENT ---
 // Serve the built frontend static files
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
