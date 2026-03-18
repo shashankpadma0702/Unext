@@ -94,7 +94,7 @@ app.get("/api/news/sports", async (req, res) => {
 // ICICI NEWS (Custom via Bing RSS)
 app.get("/api/news/icici", async (req, res) => {
   try {
-    const feed = await parser.parseURL("https://www.bing.com/news/search?q=ICICI+Bank+OR+ICICI+Securities&format=rss");
+    const feed = await parser.parseURL("https://www.bing.com/news/search?q=ICICI+Bank&format=rss");
     const articles = feed.items.slice(0, 10).map(item => ({
       title: item.title,
       url: item.link,
