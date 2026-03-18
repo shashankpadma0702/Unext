@@ -3,6 +3,13 @@ const cors = require("cors");
 const axios = require("axios");
 const path = require("path");
 
+const Parser = require("rss-parser");
+const parser = new Parser({
+  customFields: {
+    item: ['image']
+  }
+});
+
 const app = express();
 app.use(cors()); // Allows all origins by default (good for simple deployment)
 
@@ -82,6 +89,25 @@ app.get("/api/news/current", async (req, res) => {
 app.get("/api/news/sports", async (req, res) => {
   const data = await fetchLiveNews();
   res.json(formatArticles(data?.Sports));
+});
+
+// ICICI NEWS (Custom via Bing RSS)
+app.get("/api/news/icici", async (req, res) => {
+  try {
+    const feed = await parser.parseURL("https://www.bing.com/news/search?q=ICICI+Bank+OR+ICICI+Securities&format=rss");
+    const articles = feed.items.slice(0, 10).map(item => ({
+      title: item.title,
+      url: item.link,
+      // Bing RSS usually doesn't have an easily extractable image in simple parsing, providing fallback logo
+      urlToImage: item.image || "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/ICICI_Bank_Logo.svg/512px-ICICI_Bank_Logo.svg.png",
+      source: { name: "Bing News (ICICI)" },
+      description: item.contentSnippet || item.title
+    }));
+    res.json(articles);
+  } catch (error) {
+    console.error("Error fetching ICICI news:", error.message);
+    res.json([]);
+  }
 });
 
 // HEALTH CHECK (To keep Render awake)

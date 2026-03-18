@@ -4,7 +4,7 @@ import Dashboard from "./pages/Dashboard";
 import "./App.css";
 
 function App() {
-  const [category, setCategory] = useState("bfsi");
+  const [category, setCategory] = useState("icici");
 
   return (
     <div>

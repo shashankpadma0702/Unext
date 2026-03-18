@@ -6,6 +6,8 @@ const Navbar = ({ setCategory }) => {
       </div>
 
       <div className="menu">
+        <button onClick={() => setCategory("icici")}>ICICI Daily</button>
+
         <button onClick={() => setCategory("bfsi")}>BFSI</button>
 
         <button onClick={() => setCategory("markets")}>Markets</button>
