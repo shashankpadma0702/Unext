@@ -1,4 +1,4 @@
-const fallbackImages = [
+export const fallbackImages = [
   "https://images.unsplash.com/photo-1507679799987-c73779587ccf",
   "https://images.unsplash.com/photo-1559526324-593bc073d938",
   "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3",

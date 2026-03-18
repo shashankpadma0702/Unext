@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchNews } from "../services/api";
-import NewsCard from "../components/NewsCard";
+import NewsCard, { fallbackImages } from "../components/NewsCard";
 
 const Dashboard = ({ category }) => {
   const [news, setNews] = useState([]);
@@ -28,12 +28,13 @@ const Dashboard = ({ category }) => {
 
   const hero = news[0];
   const others = news.slice(1);
+  const heroImage = hero?.image || hero?.urlToImage || fallbackImages[0];
 
   return (
     <div className="dashboard">
       {hero && (
         <div className="hero">
-          <img src={hero.image || hero.urlToImage} alt="hero" />
+          <img src={heroImage} alt="hero" />
 
           <div className="hero-text">
             <h1>{hero.title}</h1>

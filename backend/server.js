@@ -98,8 +98,8 @@ app.get("/api/news/icici", async (req, res) => {
     const articles = feed.items.slice(0, 10).map(item => ({
       title: item.title,
       url: item.link,
-      // Bing RSS usually doesn't have an easily extractable image in simple parsing, providing reliable fallback image
-      urlToImage: item.image || "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3",
+      // Bing RSS usually doesn't have an easily extractable image in simple parsing
+      urlToImage: item.image || "",
       source: { name: "Bing News (ICICI)" },
       description: item.contentSnippet || item.title
     }));
