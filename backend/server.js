@@ -12,6 +12,7 @@ const parser = new Parser({
 
 const app = express();
 app.use(cors()); // Allows all origins by default (good for simple deployment)
+app.use(express.json()); // Parse incoming JSON request bodies
 
 // Internal cache to prevent spamming the OK Surf API
 // <... omitted cache logic for brevity as it remains unchanged ...>
@@ -138,8 +139,31 @@ app.get("/api/news/icici", async (req, res) => {
     res.json(articles);
   } catch (error) {
     console.error("Error fetching ICICI news:", error.message);
-    res.json(iciciNewsCache || []);
+    if (iciciNewsCache && iciciNewsCache.length > 0) {
+      return res.json(iciciNewsCache);
+    }
+    // Fallback to OK.surf Business news if Bing RSS fails or rate-limits us
+    const fallbackData = await fetchLiveNews();
+    res.json(formatArticles(fallbackData?.Business));
   }
+});
+
+// --- NEW ARTIFICIAL INTELLIGENCE ENDPOINT ---
+// Mock AI Summarization Endpoint for Testing Purposes
+// You can replace the interior of this function with a real API call to Gemini or OpenAI later before deploying!
+app.post("/api/summarize", async (req, res) => {
+  const { title, description } = req.body;
+  
+  if (!title && !description) {
+    return res.status(400).json({ error: "Missing article data" });
+  }
+
+  // Simulate a 1.5 second delay to mimic real AI generation latency
+  await new Promise(resolve => setTimeout(resolve, 1500));
+
+  const mockSummary = `This article, titled "${title}", highlights key developments in the financial sector. The main takeaway is that recent market shifts could impact long-term corporate strategies and investor portfolios.`;
+
+  return res.json({ summary: mockSummary });
 });
 
 // HEALTH CHECK (To keep Render awake)
