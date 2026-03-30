@@ -22,12 +22,27 @@ let newsCache = null;
 let lastFetchTime = 0;
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes cache
 
+let isFetchingNews = false;
+
 async function fetchLiveNews() {
   const now = Date.now();
-  if (newsCache && now - lastFetchTime < CACHE_TTL_MS) {
-    return newsCache;
+  
+  // Stale-While-Revalidate pattern: deliver stale data instantly while fetching fresh data in background
+  if (newsCache) {
+    if (now - lastFetchTime >= CACHE_TTL_MS && !isFetchingNews) {
+      isFetchingNews = true;
+      axios.get("https://ok.surf/api/v1/cors/news-feed")
+        .then(response => {
+          newsCache = response.data;
+          lastFetchTime = Date.now();
+        })
+        .catch(error => console.error("Background fetch error:", error.message))
+        .finally(() => { isFetchingNews = false; });
+    }
+    return newsCache; // Returns instantly
   }
   
+  // First load only: blocking wait
   try {
     const response = await axios.get("https://ok.surf/api/v1/cors/news-feed");
     newsCache = response.data;
@@ -35,7 +50,7 @@ async function fetchLiveNews() {
     return newsCache;
   } catch (error) {
     console.error("Error fetching live news:", error.message);
-    return newsCache; // Fallback to stale cache if available
+    return newsCache;
   }
 }
 
@@ -105,34 +120,22 @@ app.get("/api/news/icici", async (req, res) => {
   try {
     const feed = await parser.parseURL("https://www.bing.com/news/search?q=ICICI+Bank&format=rss");
     const items = feed.items.slice(0, 10);
-    const cheerio = require("cheerio");
 
-    const articles = await Promise.all(items.map(async (item) => {
-      let imageUrl = "";
-      try {
-        const match = item.link.match(/&url=([^&]+)/);
-        if (match && match[1]) {
-          const realUrl = decodeURIComponent(match[1]);
-          const htmlRes = await axios.get(realUrl, {
-            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0.0.0' },
-            timeout: 3500
-          });
-          const $ = cheerio.load(htmlRes.data);
-          const og = $('meta[property="og:image"]').attr('content');
-          if (og && og.startsWith('http')) imageUrl = og;
-        }
-      } catch (err) {
-        // Silently fail allowing the frontend fallback images to kick in
+    const articles = items.map((item) => {
+      let realUrl = item.link;
+      const match = item.link.match(/&url=([^&]+)/);
+      if (match && match[1]) {
+        realUrl = decodeURIComponent(match[1]);
       }
 
       return {
         title: item.title,
-        url: item.link,
-        urlToImage: imageUrl,
-        source: { name: "Bing News (ICICI)" },
+        url: realUrl,
+        urlToImage: "", // Instantly load with frontend fallbacks instead of slow web scraping
+        source: { name: "Bing News" },
         description: item.contentSnippet || item.title
       };
-    }));
+    });
 
     iciciNewsCache = articles;
     lastIciciFetchTime = now;
@@ -158,8 +161,8 @@ app.post("/api/summarize", async (req, res) => {
     return res.status(400).json({ error: "Missing article data" });
   }
 
-  // Simulate a 1.5 second delay to mimic real AI generation latency
-  await new Promise(resolve => setTimeout(resolve, 1500));
+  // Fast simulated delay for snappy UI UX
+  await new Promise(resolve => setTimeout(resolve, 100));
 
   const mockSummary = `This article, titled "${title}", highlights key developments in the financial sector. The main takeaway is that recent market shifts could impact long-term corporate strategies and investor portfolios.`;
 

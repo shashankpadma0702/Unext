@@ -46,7 +46,7 @@ function TickerTape() {
       "showSymbolLogo": true,
       "colorTheme": "light",
       "isTransparent": false,
-      "displayMode": "adaptive",
+      "displayMode": "regular",
       "locale": "in"
     }`;
     
