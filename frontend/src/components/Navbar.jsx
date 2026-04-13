@@ -5,6 +5,7 @@ const Navbar = ({ setCategory, category }) => {
     { id: "markets", label: "Markets" },
     { id: "commodities", label: "Commodities" },
     { id: "world", label: "World" },
+    { id: "india", label: "India" },
     { id: "current", label: "Current Affairs" },
     { id: "sports", label: "Sports" }
   ];

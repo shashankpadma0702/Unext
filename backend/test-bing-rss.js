@@ -1,16 +1,9 @@
 const Parser = require("rss-parser");
-const parser = new Parser({
-  customFields: {
-    item: ['image']
-  }
-});
+const parser = new Parser();
 
-async function testBingRss() {
-  try {
-    const feed = await parser.parseURL("https://www.bing.com/news/search?q=banking+finance+RBI&format=rss");
-    console.log(feed.items[0]);
-  } catch (err) {
-    console.error("Error", err.message);
-  }
+async function test() {
+  const feed = await parser.parseURL("https://www.bing.com/news/search?q=India+Central+Government+News&format=rss");
+  console.log(JSON.stringify(feed.items[0], null, 2));
 }
-testBingRss();
+
+test();

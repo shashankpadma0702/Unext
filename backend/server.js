@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
+const cheerio = require("cheerio");
 const path = require("path");
 
 const Parser = require("rss-parser");
@@ -110,6 +111,9 @@ app.get("/api/news/sports", async (req, res) => {
 let iciciNewsCache = null;
 let lastIciciFetchTime = 0;
 
+let indiaNewsCache = null;
+let lastIndiaFetchTime = 0;
+
 // ICICI NEWS (Custom via Bing RSS + Cheerio Image Scraper)
 app.get("/api/news/icici", async (req, res) => {
   const now = Date.now();
@@ -121,21 +125,33 @@ app.get("/api/news/icici", async (req, res) => {
     const feed = await parser.parseURL("https://www.bing.com/news/search?q=ICICI+Bank&format=rss");
     const items = feed.items.slice(0, 10);
 
-    const articles = items.map((item) => {
+    const articles = await Promise.all(items.map(async (item) => {
       let realUrl = item.link;
       const match = item.link.match(/&url=([^&]+)/);
       if (match && match[1]) {
         realUrl = decodeURIComponent(match[1]);
       }
 
+      let fetchedImage = "";
+      try {
+        const pageRes = await axios.get(realUrl, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+          timeout: 3000
+        });
+        const $ = cheerio.load(pageRes.data);
+        fetchedImage = $('meta[property="og:image"]').attr('content') || "";
+      } catch (err) {
+        // Silently fail if site blocks scraping
+      }
+
       return {
         title: item.title,
         url: realUrl,
-        urlToImage: "", // Instantly load with frontend fallbacks instead of slow web scraping
+        urlToImage: fetchedImage, 
         source: { name: "Bing News" },
         description: item.contentSnippet || item.title
       };
-    });
+    }));
 
     iciciNewsCache = articles;
     lastIciciFetchTime = now;
@@ -148,6 +164,61 @@ app.get("/api/news/icici", async (req, res) => {
     // Fallback to OK.surf Business news if Bing RSS fails or rate-limits us
     const fallbackData = await fetchLiveNews();
     res.json(formatArticles(fallbackData?.Business));
+  }
+});
+
+// INDIA NEWS (Custom via Bing RSS + Cheerio Image Web Scraper)
+app.get("/api/news/india", async (req, res) => {
+  const now = Date.now();
+  if (indiaNewsCache && now - lastIndiaFetchTime < CACHE_TTL_MS) {
+    return res.json(indiaNewsCache);
+  }
+
+  try {
+    const feed = await parser.parseURL("https://www.bing.com/news/search?q=India+Central+Government+News&format=rss");
+    const items = feed.items.slice(0, 10);
+
+    // Fetch images in parallel
+    const articles = await Promise.all(items.map(async (item) => {
+      let realUrl = item.link;
+      // Extract original URL if routed through Bing News proxy
+      const match = item.link.match(/&url=([^&]+)/);
+      if (match && match[1]) {
+        realUrl = decodeURIComponent(match[1]);
+      }
+
+      let fetchedImage = "";
+      try {
+        const pageRes = await axios.get(realUrl, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+          timeout: 3000
+        });
+        const $ = cheerio.load(pageRes.data);
+        fetchedImage = $('meta[property="og:image"]').attr('content') || "";
+      } catch (err) {
+        // Silently fail if site blocks scraping, will use fallback on frontend
+      }
+
+      return {
+        title: item.title,
+        url: realUrl,
+        urlToImage: fetchedImage, 
+        source: { name: "Bing News" },
+        description: item.contentSnippet || item.title
+      };
+    }));
+
+    indiaNewsCache = articles;
+    lastIndiaFetchTime = now;
+    res.json(articles);
+  } catch (error) {
+    console.error("Error fetching India news:", error.message);
+    if (indiaNewsCache && indiaNewsCache.length > 0) {
+      return res.json(indiaNewsCache);
+    }
+    // Fallback to World news if Bing RSS fails
+    const fallbackData = await fetchLiveNews();
+    res.json(formatArticles(fallbackData?.World));
   }
 });
 

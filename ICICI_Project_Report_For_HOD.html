@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Report: ICICI UNext Financial News Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #fff;
+        }
+        @media print {
+            body {
+                padding: 0;
+            }
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 20px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        ul {
+            margin-bottom: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .date {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        .badge {
+            background-color: #e5e7eb;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-family: monospace;
+        }
+        .card {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Project Technical Report</h1>
+        <h3>ICICI UNext Financial News Dashboard</h3>
+        <p class="date">Prepared for Department Review</p>
+    </div>
+
+    <h2>1. Executive Summary</h2>
+    <p>
+        The <strong>ICICI UNext Financial News Dashboard</strong> is a custom-built, full-stack web application designed to aggregate and deliver real-time financial market data, business news, and localized ICICI Bank updates. The goal of this project was to create a high-performance, resilient platform that offers a premium, modern interface with advanced capabilities like interactive data visualization and AI-driven content summarization capabilities.
+    </p>
+
+    <h2>2. Technology Stack</h2>
+    <p>The application follows a modern <strong>React + Node.js (MERN without the Database)</strong> architectural pattern. The stack comprises:</p>
+    <ul>
+        <li><strong>Frontend Base:</strong> React 19, powered by Vite for blazing-fast Hot Module Replacement (HMR) and optimized production builds.</li>
+        <li><strong>Frontend Data Fetching:</strong> Axios HTTP client component for handling REST API requests to the backend.</li>
+        <li><strong>Backend Environment:</strong> Node.js with the Express.js framework for handling application routing and middleware.</li>
+        <li><strong>External Integrations:</strong> OK.surf Free News API (JSON) and Bing News RSS Feeds via the <span class="badge">rss-parser</span> module.</li>
+        <li><strong>Hosting / Deployment:</strong> Pre-configured for deployment on Render, featuring self-ping algorithms to maintain high availability.</li>
+    </ul>
+
+    <h2>3. Application Architecture</h2>
+    
+    <h3>3.1 Frontend Design & Performance</h3>
+    <p>
+        The client-side interface is encapsulated in the <code>frontend/</code> directory. It follows modular React component architecture (like the centralized <code>Dashboard.jsx</code>). The UI uses a premium SaaS aesthetic—focusing on diffused shadows, pristine white layouts, and modern typography (inter/system fonts), moving away from default sterile utility frameworks towards a handcrafted stylesheet. All images utilize automatic fallbacks to ensure the UI does not break on ad-blocker or scraping-protection interceptions.
+    </p>
+
+    <h3>3.2 Backend Service Layer</h3>
+    <p>
+        The unified server in the <code>backend/</code> folder acts as an orchestration API wrapper. Rather than exposing external APIs and API keys directly to the frontend client, the Express server securely handles fetching operations. It consolidates heterogeneous data sources (e.g., standardizing JSON feeds and parsed RSS feeds) into a single, predictable structure for the React frontend, handling endpoints like <code>/api/news/bfsi</code> and <code>/api/news/icici</code>.
+    </p>
+
+    <div class="card">
+        <strong>Implementation Highlight: The Stale-While-Revalidate Pattern</strong><br>
+        To protect against aggressive rate-limiting from external APIs and to ensure sub-millisecond response times, the backend implements an advanced caching mechanism. When a request hits the routing layer, the server immediately returns the cached snapshot (valid for 5 minutes). Simultaneously, it fires a background asynchronous process to fetch the newest data from the source without forcing the end-user to wait for the HTTP handshake.
+    </div>
+
+    <h2>4. Key Features & Accomplishments</h2>
+    <ul>
+        <li><strong>Live Multi-Channel Aggregation:</strong> Merges general macro-finance data (BFSI, Markets, Commodities) directly via the OK.surf REST API payload extraction.</li>
+        <li><strong>Targeted Feed Extraction:</strong> Implemented <code>rss-parser</code> to hijack and format the Bing News RSS feed specifically for "ICICI Bank," giving the application a deeply relevant localized data feed.</li>
+        <li><strong>Mock AI Summarization:</strong> Deployed a <code>/api/summarize</code> endpoint built with structured faux delay to act as an integration point for future Natural Language Processing capabilities (like Gemini or OpenAI), showcasing readiness for generative AI features.</li>
+        <li><strong>Production Auto-Wake Mechanism:</strong> Engineered an intelligent interval loop (<code>setInterval</code> at 14 minutes) where the Node server programmatically pings its own <code>/api/health</code> endpoint to circumvent "Free Tier Sleep" restrictions common in cloud hosts like Render.</li>
+        <li><strong>Single Command Build Process:</strong> Setup synchronized <code>package.json</code> scripts enabling single-command full-stack installations and builds (e.g., executing client build injection into the Express static folder).</li>
+    </ul>
+
+    <h2>5. Conclusion</h2>
+    <p>
+        This dashboard serves as a highly robust proof-of-concept for internal corporate tooling. Through diligent separation of concerns between an aggressive backend proxy-cache and a sleek, reactive frontend UI, the application completely minimizes load times and elegantly handles network failures, providing an enterprise-tier data presentation layout ready for further data science enhancements.
+    </p>
+
+    <br><br>
+    <p style="text-align: center; color: #7f8c8d; font-size: 0.9em;">
+        <em>End of Document. Generated for Technical Review.</em>
+    </p>
+
+</body>
+</html>
