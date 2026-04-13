@@ -102,10 +102,59 @@ app.get("/api/news/current", async (req, res) => {
   res.json(formatArticles(data?.US));
 });
 
+let sportsNewsCache = null;
+let lastSportsFetchTime = 0;
+
 // SPORTS
 app.get("/api/news/sports", async (req, res) => {
-  const data = await fetchLiveNews();
-  res.json(formatArticles(data?.Sports));
+  const now = Date.now();
+  if (sportsNewsCache && now - lastSportsFetchTime < CACHE_TTL_MS) {
+    return res.json(sportsNewsCache);
+  }
+
+  try {
+    const feed = await parser.parseURL("https://www.bing.com/news/search?q=India+Sports+News+Cricket+Olympics+Football&format=rss");
+    const items = feed.items.slice(0, 10);
+
+    const articles = await Promise.all(items.map(async (item) => {
+      let realUrl = item.link;
+      const match = item.link.match(/&url=([^&]+)/);
+      if (match && match[1]) {
+        realUrl = decodeURIComponent(match[1]);
+      }
+
+      let fetchedImage = "";
+      try {
+        const pageRes = await axios.get(realUrl, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+          timeout: 3000
+        });
+        const $ = cheerio.load(pageRes.data);
+        fetchedImage = $('meta[property="og:image"]').attr('content') || "";
+      } catch (err) {
+        // Silently fail if site blocks scraping
+      }
+
+      return {
+        title: item.title,
+        url: realUrl,
+        urlToImage: fetchedImage, 
+        source: { name: "Bing News" },
+        description: item.contentSnippet || item.title
+      };
+    }));
+
+    sportsNewsCache = articles;
+    lastSportsFetchTime = now;
+    res.json(articles);
+  } catch (error) {
+    console.error("Error fetching Sports news:", error.message);
+    if (sportsNewsCache && sportsNewsCache.length > 0) {
+      return res.json(sportsNewsCache);
+    }
+    const fallbackData = await fetchLiveNews();
+    res.json(formatArticles(fallbackData?.Sports));
+  }
 });
 
 let iciciNewsCache = null;
