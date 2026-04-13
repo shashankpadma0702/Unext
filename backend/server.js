@@ -172,7 +172,14 @@ app.get("/api/news/icici", async (req, res) => {
 
   try {
     const feed = await parser.parseURL("https://www.bing.com/news/search?q=ICICI+Bank&format=rss");
-    const items = feed.items.slice(0, 10);
+    
+    // Strict Filter: Ensure "ICICI" is actually in the title or snippet so we don't accidentally get Axis Bank news
+    const strictItems = feed.items.filter(item => 
+      item.title.toLowerCase().includes('icici') || 
+      (item.contentSnippet && item.contentSnippet.toLowerCase().includes('icici'))
+    );
+    
+    const items = strictItems.slice(0, 10);
 
     const articles = await Promise.all(items.map(async (item) => {
       let realUrl = item.link;

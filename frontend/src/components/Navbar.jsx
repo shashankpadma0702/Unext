@@ -13,6 +13,7 @@ const Navbar = ({ setCategory, category }) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       setCategory(`search?q=${encodeURIComponent(searchQuery)}`);
+      setSearchQuery(""); // Clear the input field
     }
   };
   const navItems = [
