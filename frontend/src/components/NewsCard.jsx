@@ -17,10 +17,10 @@ const NewsCard = ({ article, index }) => {
   useEffect(() => {
     let timer;
     if (summary) {
-      // Automatically close it after 10 seconds of reading time
+      // Automatically close it after 15 seconds of reading time
       timer = setTimeout(() => {
         setSummary(null);
-      }, 10000);
+      }, 15000);
     }
     return () => clearTimeout(timer);
   }, [summary]);
