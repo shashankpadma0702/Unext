@@ -271,6 +271,50 @@ app.get("/api/news/india", async (req, res) => {
   }
 });
 
+// --- DYNAMIC SEARCH ENDPOINT ---
+app.get("/api/news/search", async (req, res) => {
+  const query = req.query.q;
+  if (!query) return res.json([]);
+
+  try {
+    const feed = await parser.parseURL(`https://www.bing.com/news/search?q=${encodeURIComponent(query)}&format=rss`);
+    const items = feed.items.slice(0, 10);
+
+    const articles = await Promise.all(items.map(async (item) => {
+      let realUrl = item.link;
+      const match = item.link.match(/&url=([^&]+)/);
+      if (match && match[1]) {
+        realUrl = decodeURIComponent(match[1]);
+      }
+
+      let fetchedImage = "";
+      try {
+        const pageRes = await axios.get(realUrl, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+          timeout: 3000
+        });
+        const $ = cheerio.load(pageRes.data);
+        fetchedImage = $('meta[property="og:image"]').attr('content') || "";
+      } catch (err) {
+        // Silently fail
+      }
+
+      return {
+        title: item.title,
+        url: realUrl,
+        urlToImage: fetchedImage, 
+        source: { name: "Bing News Search" },
+        description: item.contentSnippet || item.title
+      };
+    }));
+
+    res.json(articles);
+  } catch (error) {
+    console.error("Error fetching Search news:", error.message);
+    res.json([]);
+  }
+});
+
 // --- NEW ARTIFICIAL INTELLIGENCE ENDPOINT ---
 // Mock AI Summarization Endpoint for Testing Purposes
 // You can replace the interior of this function with a real API call to Gemini or OpenAI later before deploying!
