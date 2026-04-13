@@ -38,7 +38,7 @@ const Navbar = ({ setCategory, category }) => {
         ))}
       </div>
 
-      <form onSubmit={handleSearch} style={{ display: 'flex', marginLeft: 'auto', gap: '5px' }}>
+      <form onSubmit={handleSearch} style={{ display: 'flex', gap: '8px' }}>
         <input 
           type="text" 
           placeholder="Search topics..." 
