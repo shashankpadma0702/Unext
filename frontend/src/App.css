@@ -240,5 +240,35 @@ body {
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+}
+
+/* DARK MODE OVERRIDES */
+body.dark {
+  background: #121212;
+  color: #e0e0e0;
+}
+
+body.dark .card, body.dark .hero {
+  background: #1e1e1e;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+body.dark .card-content p, body.dark .hero-text p {
+  color: #aaa;
+}
+
+body.dark .card-content h3, body.dark .hero-text h1 {
+  color: #fff;
+}
+
+body.dark .card-footer a, body.dark .hero-text a {
+  color: #F99D27; /* Sea buckthorn contrast */
+}
+
+body.dark .section-title {
+  color: #e0e0e0;
+}
+
+body.dark .card-footer span {
+  color: #777;
 }

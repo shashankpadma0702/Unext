@@ -2,6 +2,12 @@ import { useState } from "react";
 
 const Navbar = ({ setCategory, category }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isDark, setIsDark] = useState(false);
+
+  const toggleDark = () => {
+    setIsDark(!isDark);
+    document.body.classList.toggle('dark');
+  };
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -38,36 +44,63 @@ const Navbar = ({ setCategory, category }) => {
         ))}
       </div>
 
-      <form onSubmit={handleSearch} style={{ display: 'flex', gap: '8px' }}>
-        <input 
-          type="text" 
-          placeholder="Search topics..." 
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ 
-            padding: '8px 12px', 
-            borderRadius: '20px', 
-            border: '1px solid #ccc',
-            outline: 'none',
-            fontSize: '14px',
-            width: '200px'
-          }}
-        />
+      <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+        <form onSubmit={handleSearch} style={{ display: 'flex', gap: '8px' }}>
+          <input 
+            type="text" 
+            placeholder="Search topics..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{ 
+              padding: '8px 12px', 
+              borderRadius: '20px', 
+              border: '1px solid #ccc',
+              outline: 'none',
+              fontSize: '14px',
+              width: '200px'
+            }}
+          />
+          <button 
+            type="submit" 
+            style={{ 
+              padding: '8px 18px', 
+              borderRadius: '20px', 
+              background: 'rgba(255, 255, 255, 0.2)', 
+              color: 'white', 
+              border: 'none', 
+              cursor: 'pointer',
+              fontWeight: '600',
+              backdropFilter: 'blur(4px)',
+              transition: 'background 0.3s ease'
+            }}
+            onMouseOver={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.35)'}
+            onMouseOut={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+          >
+            🔍
+          </button>
+        </form>
+        
         <button 
-          type="submit" 
-          style={{ 
-            padding: '8px 15px', 
-            borderRadius: '20px', 
-            background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)', 
-            color: 'white', 
-            border: 'none', 
+          onClick={toggleDark}
+          style={{
+            background: 'rgba(255,255,255,0.2)',
+            border: 'none',
+            borderRadius: '50%',
+            width: '40px',
+            height: '40px',
+            fontSize: '18px',
             cursor: 'pointer',
-            fontWeight: '600'
+            color: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: '0.3s'
           }}
+          title="Toggle Dark Mode"
         >
-          🔍
+          {isDark ? "☀️" : "🌙"}
         </button>
-      </form>
+      </div>
     </div>
   );
 };
