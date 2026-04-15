@@ -1,19 +1,24 @@
-/* GLOBAL */
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
   font-family: "Inter", "Segoe UI", sans-serif;
   background: #f4f6f9;
   color: #1f1f1f;
+  overflow-x: hidden;
 }
 
 /* NAVBAR */
 
 .navbar {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 50px;
+  gap: 20px;
+  padding: 18px 30px;
   background: linear-gradient(135deg, #D4333B, #B02A30); /* Vibrant, lighter Autumn Crimson Gradient */
   border-bottom: 4px solid #F99D27; /* Sea Buckthorn accent */
   color: white;
@@ -32,6 +37,8 @@ body {
 
 .menu {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
 }
 
@@ -227,19 +234,59 @@ body {
   justify-content: center;
   align-items: center;
   height: 60vh;
+  gap: 15px;
 }
 
 .spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid rgba(176, 42, 48, 0.15); /* Autumn Crimson light */
-  border-top: 5px solid #B02A30; /* Autumn Crimson */
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  border: 3px solid transparent;
+  border-top-color: #B02A30; /* Autumn Crimson */
+  border-bottom-color: #F99D27; /* Sea Buckthorn */
+  animation: spin 1.2s linear infinite, loaderGlow 1.5s alternate infinite ease-in-out;
+  position: relative;
+}
+
+.spinner::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: #F99D27; /* Sea Buckthorn */
+  border-bottom-color: #B02A30; /* Autumn Crimson */
+  animation: spin 0.8s linear infinite reverse;
+}
+
+.spinner::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+  background: rgba(249, 157, 39, 0.2);
+  border-radius: 50%;
+  animation: pulseCore 1.2s alternate infinite ease-in-out;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes loaderGlow {
+  0% { box-shadow: 0 0 10px rgba(176, 42, 48, 0.2); }
+  100% { box-shadow: 0 0 25px rgba(249, 157, 39, 0.6); }
+}
+
+@keyframes pulseCore {
+  0% { transform: scale(0.8); opacity: 0.4; }
+  100% { transform: scale(1.2); opacity: 1; }
 }
 
 /* DARK MODE OVERRIDES */
