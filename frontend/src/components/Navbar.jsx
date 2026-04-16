@@ -29,11 +29,11 @@ const Navbar = ({ setCategory, category }) => {
 
   return (
     <div className="navbar">
-      <div className="logo">
+      <div className="logo" style={{ minWidth: 'max-content' }}>
         ICICI <span>UNext</span> News
       </div>
 
-      <div className="menu">
+      <div className="menu" style={{ flex: 1, margin: '0 20px', justifyContent: 'center' }}>
         {navItems.map((item) => (
           <button
             key={item.id}
@@ -45,7 +45,7 @@ const Navbar = ({ setCategory, category }) => {
         ))}
       </div>
 
-      <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: '15px', alignItems: 'center', marginLeft: 'auto', minWidth: 'max-content' }}>
         <form onSubmit={handleSearch} style={{ display: 'flex', gap: '8px' }}>
           <input 
             type="text" 

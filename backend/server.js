@@ -11,6 +11,27 @@ const parser = new Parser({
   }
 });
 
+// A blacklist of deeply paywalled, inaccessible news domains
+const PREMIUM_DOMAINS = [
+  "bloomberg.com", 
+  "wsj.com", 
+  "ft.com", 
+  "business-standard.com", 
+  "seekingalpha.com",
+  "barrons.com",
+  "fortune.com",
+  "thehindubusinessline.com",
+  "livemint.com/premium",
+  "economictimes.indiatimes.com/prime",
+  "moneycontrol.com/pro"
+];
+
+function isFreeArticle(url) {
+  if (!url) return true;
+  const lowerUrl = url.toLowerCase();
+  return !PREMIUM_DOMAINS.some(domain => lowerUrl.includes(domain));
+}
+
 const app = express();
 app.use(cors()); // Allows all origins by default (good for simple deployment)
 app.use(express.json()); // Parse incoming JSON request bodies
@@ -37,7 +58,10 @@ async function fetchLiveNews() {
           newsCache = response.data;
           lastFetchTime = Date.now();
         })
-        .catch(error => console.error("Background fetch error:", error.message))
+        .catch(error => {
+          console.error("Background fetch error:", error.message);
+          lastFetchTime = Date.now(); // Back off on error instead of spamming
+        })
         .finally(() => { isFetchingNews = false; });
     }
     return newsCache; // Returns instantly
@@ -58,7 +82,14 @@ async function fetchLiveNews() {
 // Convert OK.surf format to our Dashboard format
 function formatArticles(articlesArray) {
   if (!articlesArray) return [];
-  return articlesArray.slice(0, 10).map(item => ({
+  
+  // Filter out premium/paywalled sites so users can easily read the news
+  const freeArticles = articlesArray.filter(item => isFreeArticle(item.link));
+
+  // Shuffle array to ensure fresh news layout on every refresh
+  const shuffled = [...freeArticles].sort(() => 0.5 - Math.random());
+  
+  return shuffled.slice(0, 10).map(item => ({
     title: item.title,
     url: item.link,
     // ok.surf provides the image URL directly in the 'og' string field
@@ -109,12 +140,21 @@ let lastSportsFetchTime = 0;
 app.get("/api/news/sports", async (req, res) => {
   const now = Date.now();
   if (sportsNewsCache && now - lastSportsFetchTime < CACHE_TTL_MS) {
-    return res.json(sportsNewsCache);
+    const shuffledCache = [...sportsNewsCache].sort(() => 0.5 - Math.random());
+    return res.json(shuffledCache);
   }
 
   try {
     const feed = await parser.parseURL("https://www.bing.com/news/search?q=India+Sports+News+Cricket+Olympics+Football&format=rss");
-    const items = feed.items.slice(0, 10);
+    
+    // Filter out premium articles
+    const freeItems = feed.items.filter(item => {
+      let realUrl = item.link;
+      const match = item.link.match(/&url=([^&]+)/);
+      if (match && match[1]) realUrl = decodeURIComponent(match[1]);
+      return isFreeArticle(realUrl);
+    });
+    const items = freeItems.slice(0, 10);
 
     const articles = await Promise.all(items.map(async (item) => {
       let realUrl = item.link;
@@ -146,11 +186,14 @@ app.get("/api/news/sports", async (req, res) => {
 
     sportsNewsCache = articles;
     lastSportsFetchTime = now;
-    res.json(articles);
+    const shuffledArticles = [...articles].sort(() => 0.5 - Math.random());
+    res.json(shuffledArticles);
   } catch (error) {
     console.error("Error fetching Sports news:", error.message);
+    lastSportsFetchTime = now; // Add backoff
     if (sportsNewsCache && sportsNewsCache.length > 0) {
-      return res.json(sportsNewsCache);
+      const shuffledCache = [...sportsNewsCache].sort(() => 0.5 - Math.random());
+      return res.json(shuffledCache);
     }
     const fallbackData = await fetchLiveNews();
     res.json(formatArticles(fallbackData?.Sports));
@@ -167,17 +210,22 @@ let lastIndiaFetchTime = 0;
 app.get("/api/news/icici", async (req, res) => {
   const now = Date.now();
   if (iciciNewsCache && now - lastIciciFetchTime < CACHE_TTL_MS) {
-    return res.json(iciciNewsCache);
+    const shuffledCache = [...iciciNewsCache].sort(() => 0.5 - Math.random());
+    return res.json(shuffledCache);
   }
 
   try {
     const feed = await parser.parseURL("https://www.bing.com/news/search?q=ICICI+Bank&format=rss");
     
     // Strict Filter: Ensure "ICICI" is actually in the title or snippet so we don't accidentally get Axis Bank news
-    const strictItems = feed.items.filter(item => 
-      item.title.toLowerCase().includes('icici') || 
-      (item.contentSnippet && item.contentSnippet.toLowerCase().includes('icici'))
-    );
+    const strictItems = feed.items.filter(item => {
+      let isMatch = item.title.toLowerCase().includes('icici') || (item.contentSnippet && item.contentSnippet.toLowerCase().includes('icici'));
+      if(!isMatch) return false;
+      let realUrl = item.link;
+      const match = item.link.match(/&url=([^&]+)/);
+      if (match && match[1]) realUrl = decodeURIComponent(match[1]);
+      return isFreeArticle(realUrl);
+    });
     
     const items = strictItems.slice(0, 10);
 
@@ -211,11 +259,14 @@ app.get("/api/news/icici", async (req, res) => {
 
     iciciNewsCache = articles;
     lastIciciFetchTime = now;
-    res.json(articles);
+    const shuffledArticles = [...articles].sort(() => 0.5 - Math.random());
+    res.json(shuffledArticles);
   } catch (error) {
     console.error("Error fetching ICICI news:", error.message);
+    lastIciciFetchTime = now; // Add backoff
     if (iciciNewsCache && iciciNewsCache.length > 0) {
-      return res.json(iciciNewsCache);
+      const shuffledCache = [...iciciNewsCache].sort(() => 0.5 - Math.random());
+      return res.json(shuffledCache);
     }
     // Fallback to OK.surf Business news if Bing RSS fails or rate-limits us
     const fallbackData = await fetchLiveNews();
@@ -227,12 +278,20 @@ app.get("/api/news/icici", async (req, res) => {
 app.get("/api/news/india", async (req, res) => {
   const now = Date.now();
   if (indiaNewsCache && now - lastIndiaFetchTime < CACHE_TTL_MS) {
-    return res.json(indiaNewsCache);
+    const shuffledCache = [...indiaNewsCache].sort(() => 0.5 - Math.random());
+    return res.json(shuffledCache);
   }
 
   try {
     const feed = await parser.parseURL("https://www.bing.com/news/search?q=India+Central+Government+News&format=rss");
-    const items = feed.items.slice(0, 10);
+    
+    const freeItems = feed.items.filter(item => {
+      let realUrl = item.link;
+      const match = item.link.match(/&url=([^&]+)/);
+      if (match && match[1]) realUrl = decodeURIComponent(match[1]);
+      return isFreeArticle(realUrl);
+    });
+    const items = freeItems.slice(0, 10);
 
     // Fetch images in parallel
     const articles = await Promise.all(items.map(async (item) => {
@@ -266,11 +325,14 @@ app.get("/api/news/india", async (req, res) => {
 
     indiaNewsCache = articles;
     lastIndiaFetchTime = now;
-    res.json(articles);
+    const shuffledArticles = [...articles].sort(() => 0.5 - Math.random());
+    res.json(shuffledArticles);
   } catch (error) {
     console.error("Error fetching India news:", error.message);
+    lastIndiaFetchTime = now; // Add backoff
     if (indiaNewsCache && indiaNewsCache.length > 0) {
-      return res.json(indiaNewsCache);
+      const shuffledCache = [...indiaNewsCache].sort(() => 0.5 - Math.random());
+      return res.json(shuffledCache);
     }
     // Fallback to World news if Bing RSS fails
     const fallbackData = await fetchLiveNews();
@@ -285,7 +347,14 @@ app.get("/api/news/search", async (req, res) => {
 
   try {
     const feed = await parser.parseURL(`https://www.bing.com/news/search?q=${encodeURIComponent(query)}&format=rss`);
-    const items = feed.items.slice(0, 10);
+    
+    const freeItems = feed.items.filter(item => {
+      let realUrl = item.link;
+      const match = item.link.match(/&url=([^&]+)/);
+      if (match && match[1]) realUrl = decodeURIComponent(match[1]);
+      return isFreeArticle(realUrl);
+    });
+    const items = freeItems.slice(0, 10);
 
     const articles = await Promise.all(items.map(async (item) => {
       let realUrl = item.link;

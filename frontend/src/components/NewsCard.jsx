@@ -50,6 +50,10 @@ const NewsCard = ({ article, index }) => {
       <img
         src={image}
         alt="news"
+        onError={(e) => { 
+          e.target.onerror = null; 
+          e.target.src = fallbackImages[index % fallbackImages.length]; 
+        }}
         style={{
           width: "100%",
           height: "200px",

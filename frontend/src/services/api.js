@@ -10,7 +10,10 @@ const defaultLocalUrl = isDev
 const BASE_URL = import.meta.env.VITE_API_URL || defaultLocalUrl;
 
 export const fetchNews = async (category) => {
-  const res = await axios.get(`${BASE_URL}/${category || "home"}`);
+  const cat = category || "home";
+  const separator = cat.includes("?") ? "&" : "?";
+  // Adding timestamp to strictly avoid browser caching, ensuring fresh data on every refresh
+  const res = await axios.get(`${BASE_URL}/${cat}${separator}t=${new Date().getTime()}`);
 
   return res.data;
 };

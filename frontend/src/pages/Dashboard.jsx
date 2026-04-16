@@ -34,7 +34,11 @@ const Dashboard = ({ category }) => {
     <div className="dashboard">
       {hero && (
         <div className="hero">
-          <img src={heroImage} alt="hero" />
+          <img 
+            src={heroImage} 
+            alt="hero" 
+            onError={(e) => { e.target.onerror = null; e.target.src = fallbackImages[0]; }} 
+          />
 
           <div className="hero-text">
             <h1>{hero.title}</h1>
