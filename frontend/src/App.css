@@ -44,6 +44,8 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
+  flex: 1;
+  margin: 0 20px;
 }
 
 .menu button {
@@ -69,6 +71,70 @@ body {
   color: #8A1F25; /* Dark Crimson text */
   font-weight: 700;
   box-shadow: 0 4px 12px rgba(249, 157, 39, 0.4);
+}
+
+/* NAVBAR ACTIONS (Search, Report, Dark Mode) */
+.navbar-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-form {
+  display: flex;
+  gap: 8px;
+}
+
+.search-input {
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  outline: none;
+  font-size: 14px;
+  width: 200px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.search-input:focus {
+  background: rgba(255, 255, 255, 0.2);
+  width: 220px;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.action-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.theme-btn {
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
 }
 
 /* DASHBOARD */
@@ -229,6 +295,7 @@ body {
 @media (max-width: 900px) {
   .hero {
     grid-template-columns: 1fr;
+    margin: 15px;
   }
 
   .hero img {
@@ -241,12 +308,34 @@ body {
 
   .navbar {
     flex-direction: column;
-    gap: 10px;
+    padding: 15px;
+    gap: 15px;
   }
 
   .menu {
     flex-wrap: wrap;
     justify-content: center;
+    margin: 10px 0;
+  }
+
+  .navbar-actions {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .search-form {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .search-input {
+    flex: 1;
+    min-width: 150px;
+    width: auto;
+  }
+
+  .search-input:focus {
+    width: auto;
   }
 }
 

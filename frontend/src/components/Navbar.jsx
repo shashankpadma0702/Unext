@@ -29,11 +29,11 @@ const Navbar = ({ setCategory, category, setShowReport }) => {
 
   return (
     <div className="navbar">
-      <div className="logo" style={{ minWidth: 'max-content' }}>
+      <div className="logo">
         ICICI <span>UNext</span> News
       </div>
 
-      <div className="menu" style={{ flex: 1, margin: '0 20px', justifyContent: 'center' }}>
+      <div className="menu">
         {navItems.map((item) => (
           <button
             key={item.id}
@@ -48,78 +48,30 @@ const Navbar = ({ setCategory, category, setShowReport }) => {
         ))}
       </div>
 
-      <div style={{ display: 'flex', gap: '15px', alignItems: 'center', marginLeft: 'auto', minWidth: 'max-content' }}>
-        <form onSubmit={handleSearch} style={{ display: 'flex', gap: '8px' }}>
+      <div className="navbar-actions">
+        <form onSubmit={handleSearch} className="search-form">
           <input 
             type="text" 
             placeholder="Search topics..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ 
-              padding: '8px 12px', 
-              borderRadius: '20px', 
-              border: '1px solid #ccc',
-              outline: 'none',
-              fontSize: '14px',
-              width: '200px'
-            }}
+            className="search-input"
           />
-          <button 
-            type="submit" 
-            style={{ 
-              padding: '8px 18px', 
-              borderRadius: '20px', 
-              background: 'rgba(255, 255, 255, 0.2)', 
-              color: 'white', 
-              border: 'none', 
-              cursor: 'pointer',
-              fontWeight: '600',
-              backdropFilter: 'blur(4px)',
-              transition: 'background 0.3s ease'
-            }}
-            onMouseOver={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.35)'}
-            onMouseOut={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
-          >
+          <button type="submit" className="action-btn search-btn">
             🔍
           </button>
         </form>
         
         <button
           onClick={() => setShowReport(true)}
-          style={{
-            background: 'rgba(255,255,255,0.2)',
-            border: 'none',
-            borderRadius: '20px',
-            padding: '8px 16px',
-            fontSize: '14px',
-            cursor: 'pointer',
-            color: 'white',
-            fontWeight: 'bold',
-            transition: '0.3s',
-            backdropFilter: 'blur(4px)'
-          }}
-          onMouseOver={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.35)'}
-          onMouseOut={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+          className="action-btn report-btn"
         >
           📄 Daily Report
         </button>
 
         <button 
           onClick={toggleDark}
-          style={{
-            background: 'rgba(255,255,255,0.2)',
-            border: 'none',
-            borderRadius: '50%',
-            width: '40px',
-            height: '40px',
-            fontSize: '18px',
-            cursor: 'pointer',
-            color: 'white',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: '0.3s'
-          }}
+          className="action-btn theme-btn"
           title="Toggle Dark Mode"
         >
           {isDark ? "☀️" : "🌙"}
