@@ -22,7 +22,8 @@ export const fetchSummary = async (article) => {
   const URL = BASE_URL.replace('/news', '');
   const res = await axios.post(`${URL}/summarize`, {
     title: article.title,
-    description: article.description
+    description: article.description,
+    url: article.url
   });
   return res.data.summary;
 };

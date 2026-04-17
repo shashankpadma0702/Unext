@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Navbar = ({ setCategory, category }) => {
+const Navbar = ({ setCategory, category, setShowReport }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDark, setIsDark] = useState(false);
 
@@ -38,7 +38,10 @@ const Navbar = ({ setCategory, category }) => {
           <button
             key={item.id}
             className={category === item.id ? "active" : ""}
-            onClick={() => setCategory(item.id)}
+            onClick={() => {
+              setCategory(item.id);
+              setShowReport(false);
+            }}
           >
             {item.label}
           </button>
@@ -81,6 +84,26 @@ const Navbar = ({ setCategory, category }) => {
           </button>
         </form>
         
+        <button
+          onClick={() => setShowReport(true)}
+          style={{
+            background: 'rgba(255,255,255,0.2)',
+            border: 'none',
+            borderRadius: '20px',
+            padding: '8px 16px',
+            fontSize: '14px',
+            cursor: 'pointer',
+            color: 'white',
+            fontWeight: 'bold',
+            transition: '0.3s',
+            backdropFilter: 'blur(4px)'
+          }}
+          onMouseOver={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.35)'}
+          onMouseOut={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+        >
+          📄 Daily Report
+        </button>
+
         <button 
           onClick={toggleDark}
           style={{
