@@ -10,6 +10,12 @@ const Dashboard = ({ category }) => {
     setLoading(true);
     const data = await fetchNews(category);
 
+    // Fisher-Yates shuffle algorithm to randomize news order so the newest looking content changes
+    for (let i = data.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [data[i], data[j]] = [data[j], data[i]];
+    }
+
     setNews(data);
     setLoading(false);
   };
