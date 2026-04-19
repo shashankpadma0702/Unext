@@ -338,6 +338,7 @@ body {
 
   .menu button {
     white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .navbar-actions {

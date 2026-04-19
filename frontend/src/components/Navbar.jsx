@@ -1,8 +1,62 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const Navbar = ({ setCategory, category, setShowReport }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDark, setIsDark] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const menu = menuRef.current;
+    let scrollInterval;
+
+    // We wait a tiny bit for the browser to calculate scrollWidth properly
+    setTimeout(() => {
+      if (menu && menu.scrollWidth > menu.clientWidth) {
+        // Start the scroll at the absolute right edge so items can move visually Left-to-Right
+        if (menu.scrollLeft === 0) {
+          menu.scrollLeft = menu.scrollWidth;
+        }
+      }
+    }, 100);
+
+    const startScrolling = () => {
+      if (menu && menu.scrollWidth > menu.clientWidth) {
+        scrollInterval = setInterval(() => {
+          menu.scrollLeft -= 1; // Decrease scrollLeft, making items visually move Right!
+          
+          // If we hit the left edge (0), instantly jump back to the right side
+          if (menu.scrollLeft <= 0) {
+            menu.scrollLeft = menu.scrollWidth;
+          }
+        }, 30); // Smooth steady speed
+      }
+    };
+
+    const stopScrolling = () => {
+      clearInterval(scrollInterval);
+    };
+
+    startScrolling();
+
+    // Pause the animation if the user touches or hovers so they can click!
+    if (menu) {
+      menu.addEventListener('mouseenter', stopScrolling);
+      menu.addEventListener('mouseleave', startScrolling);
+      menu.addEventListener('touchstart', stopScrolling, { passive: true });
+      menu.addEventListener('touchend', startScrolling, { passive: true });
+    }
+
+    return () => {
+      clearInterval(scrollInterval);
+      if (menu) {
+        menu.removeEventListener('mouseenter', stopScrolling);
+        menu.removeEventListener('mouseleave', startScrolling);
+        menu.removeEventListener('touchstart', stopScrolling);
+        menu.removeEventListener('touchend', startScrolling);
+      }
+    };
+  }, []);
+
 
   const toggleDark = () => {
     setIsDark(!isDark);
@@ -33,7 +87,7 @@ const Navbar = ({ setCategory, category, setShowReport }) => {
         ICICI <span>UNext</span> News
       </div>
 
-      <div className="menu">
+      <div className="menu" ref={menuRef}>
         {navItems.map((item) => (
           <button
             key={item.id}
