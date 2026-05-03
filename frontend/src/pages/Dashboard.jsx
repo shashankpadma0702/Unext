@@ -7,17 +7,26 @@ const Dashboard = ({ category }) => {
   const [loading, setLoading] = useState(true);
 
   const loadNews = async () => {
-    setLoading(true);
-    const data = await fetchNews(category);
+    try {
+      setLoading(true);
+      const data = await fetchNews(category);
 
-    // Fisher-Yates shuffle algorithm to randomize news order so the newest looking content changes
-    for (let i = data.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [data[i], data[j]] = [data[j], data[i]];
+      if (data && data.length > 0) {
+        // Fisher-Yates shuffle algorithm to randomize news order so the newest looking content changes
+        for (let i = data.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [data[i], data[j]] = [data[j], data[i]];
+        }
+        setNews(data);
+      } else {
+        setNews([]);
+      }
+    } catch (error) {
+      console.error("Error loading news in Dashboard:", error);
+      setNews([]);
+    } finally {
+      setLoading(false);
     }
-
-    setNews(data);
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -28,6 +37,15 @@ const Dashboard = ({ category }) => {
     return (
       <div className="loader-container">
         <div className="spinner"></div>
+      </div>
+    );
+  }
+
+  if (!news || news.length === 0) {
+    return (
+      <div className="dashboard" style={{ textAlign: "center", padding: "50px" }}>
+        <h2>No news available.</h2>
+        <p>Please check if your backend server is running and try again.</p>
       </div>
     );
   }

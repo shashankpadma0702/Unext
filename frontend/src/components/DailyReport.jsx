@@ -48,7 +48,7 @@ const DailyReport = () => {
         // Creating an Investment Suggestion based on the top market news
         const topMarketNews = enhancedReport["Global Markets"][0]?.title || "Diversify your portfolio across stable sectors.";
         const isBearish = topMarketNews.toLowerCase().match(/(bankrupt|fall|crash|drop|loss|decline|crisis)/);
-        
+
         let investmentSuggestion = "";
         if (isBearish) {
           investmentSuggestion = `🚨 WARNING: Market headlines indicate "${topMarketNews}". Reason: Sector-wide instability and shifting fiscal regulations. Strategic Suggestion: Liquidate risky volatile assets and hold capital in low-risk bonds until the current crisis stabilizes. Defensive positioning in BFSI is recommended.`;
@@ -92,21 +92,21 @@ const DailyReport = () => {
 
       <div className="investment-suggestion">
         <h3>💡 Today's Executive Investment Strategy</h3>
-        <p>{reportData.suggestion}</p>
+        <p>{reportData?.suggestion || "Unable to fetch report data. Please check your server connection."}</p>
       </div>
 
-      <br/>
+      <br />
 
-      {Object.entries(reportData).map(([category, articles]) => {
+      {reportData && Object.entries(reportData).map(([category, articles]) => {
         if (category === 'suggestion') return null;
-        
+
         return (
           <div key={category} className="report-section">
             <h2>{category} Top Stories</h2>
             {articles.map((article, idx) => (
               <div key={idx} className="report-article">
-                <img 
-                  src={article.urlToImage || fallbackImage} 
+                <img
+                  src={article.urlToImage || fallbackImage}
                   alt={article.title}
                   onError={(e) => { e.target.onerror = null; e.target.src = fallbackImage; }}
                 />
